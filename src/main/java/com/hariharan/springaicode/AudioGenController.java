@@ -1,6 +1,9 @@
 package com.hariharan.springaicode;
 
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.ai.openai.OpenAiAudioTranscriptionModel;
+import org.springframework.ai.openai.OpenAiAudioTranscriptionOptions;
+import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +21,14 @@ public class AudioGenController {
     @PostMapping("api/stt")
     public String speechToText(@RequestParam MultipartFile file){
 
-        return audioModel.call(file.getResource());
+        OpenAiAudioTranscriptionOptions options = OpenAiAudioTranscriptionOptions.builder()
+                .language("ta")
+                .responseFormat(OpenAiAudioApi.TranscriptResponseFormat.SRT)
+                .build();
+
+        AudioTranscriptionPrompt prompt = new AudioTranscriptionPrompt(file.getResource(), options);
+
+        return audioModel.call(prompt).getResult().getOutput();
     }
 
 }
