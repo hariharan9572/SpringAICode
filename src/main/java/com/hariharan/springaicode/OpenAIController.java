@@ -7,7 +7,10 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,10 @@ import java.util.Map;
 public class OpenAIController {
 
     private ChatClient chatClient;
+
+    @Autowired
+    @Qualifier("openAiEmbeddingModel")
+    private EmbeddingModel embeddingModel;
 
     public OpenAIController(OpenAiChatModel chatModel){
         this.chatClient = ChatClient.create(chatModel);
@@ -76,6 +83,13 @@ public class OpenAIController {
                 .content();
 
         return response;
+
+    }
+
+    @PostMapping("/api/embedding")
+    public float[] embedding(@RequestParam String text){
+
+        return embeddingModel.embed(text);
 
     }
 
