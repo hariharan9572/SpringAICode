@@ -3,6 +3,7 @@ package com.hariharan.springaicode;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.converter.ListOutputConverter;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -30,7 +31,7 @@ public class MovieController {
     public List<String> getMovies(@RequestParam String name){
 
         String message = """
-                List Top 10 Movies of {name}
+                List Top 10 movies of {name}
                 {format}
                 """;
 
@@ -42,6 +43,24 @@ public class MovieController {
         List<String> movies = opCon.convert(chatClient.prompt(prompt).call().content());
 
         return movies;
+    }
+
+    @GetMapping("movie")
+    public Movie getMovieData(@RequestParam String name){
+
+        String message = """
+                Get me the best movie of {name}
+                {format}
+                """;
+
+        BeanOutputConverter<Movie> opCon = new BeanOutputConverter<>(Movie.class);
+
+        PromptTemplate template = new PromptTemplate(message);
+
+        Prompt prompt = template.create(Map.of("name", name, "format", opCon.getFormat()));
+        Movie movie = opCon.convert(chatClient.prompt(prompt).call().content());
+
+        return movie;
     }
 
 }
