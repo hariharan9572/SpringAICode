@@ -10,11 +10,13 @@ import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,26 @@ public class MovieController {
         Movie movie = opCon.convert(chatClient.prompt(prompt).call().content());
 
         return movie;
+    }
+
+    @GetMapping("moviesList")
+    public List<Movie> getMoviesList(@RequestParam String name){
+
+        String message = """
+                Top 10 movies of {name}
+                {format}
+                """;
+
+        BeanOutputConverter<List<Movie>> opCon = new BeanOutputConverter<>(
+                new ParameterizedTypeReference<List<Movie>>() {}
+        );
+
+        PromptTemplate template = new PromptTemplate(message);
+
+        Prompt prompt = template.create(Map.of("name", name, "format", opCon.getFormat()));
+        List<Movie> movies = opCon.convert(chatClient.prompt(prompt).call().content());
+
+        return movies;
     }
 
 }
