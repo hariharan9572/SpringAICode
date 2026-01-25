@@ -2,7 +2,9 @@ package com.hariharan.springaicode;
 
 import org.springframework.ai.openai.OpenAiAudioTranscriptionModel;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AudioGenController {
@@ -14,8 +16,9 @@ public class AudioGenController {
     }
 
     @PostMapping("api/stt")
-    public String speechToText(){
-        return "";
+    public String speechToText(@RequestParam MultipartFile file){
+
+        return audioModel.call(file.getResource());
     }
 
 }
