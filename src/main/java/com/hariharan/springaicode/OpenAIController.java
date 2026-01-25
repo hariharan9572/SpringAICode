@@ -113,4 +113,12 @@ public class OpenAIController {
 
     }
 
+    @PostMapping("/api/product")
+    public String getProducts (@RequestParam String text){
+
+
+
+        return "";
+    }
+
 }
